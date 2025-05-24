@@ -400,6 +400,7 @@
 // server.js
 
 const express = require("express");
+const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
@@ -412,6 +413,12 @@ const PORT = 8000;
  // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Serve uploaded images statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
@@ -617,6 +624,7 @@ app.get("/api/email-count", async (req, res) => {
     res.status(500).json({ message: "Failed to count emails" });
   }
 });
+
 app.post("/api/send-otp", async (req, res) => {
   const { officialEmail } = req.body;
 
@@ -644,7 +652,6 @@ app.post("/api/send-otp", async (req, res) => {
     res.status(500).json({ message: "Failed to resend OTP" });
   }
 });
-
 
 // OTP Verification
 app.post("/api/verify-otp", async (req, res) => {
